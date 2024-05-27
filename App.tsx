@@ -28,7 +28,8 @@ function App(): React.JSX.Element {
     image, 
     pickImage, 
     convertBase64ToImage, 
-    reset
+    reset,
+    takePhoto
   } = useImagePicker();
 
   useEffect(() => {
@@ -50,10 +51,7 @@ function App(): React.JSX.Element {
           style={styles.mainContainer}>
           <Header />
           {!photoSelected && <ControlPanel 
-            onTakePhoto={() => {
-              console.log('Take photo')
-              setPhotoSelected(true)
-            }}
+            onTakePhoto={takePhoto}
             onChoosePhoto={pickImage}/>
           }
           {(photoSelected && image) && <Image style={{width: 200, height: 200}} source={{uri: image}}/>}
