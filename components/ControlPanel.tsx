@@ -7,7 +7,7 @@ import SecondaryButton from "./SecondaryButton";
 
 interface ControlPanelProps {
     onTakePhoto: () => void;
-    onChoosePhoto: () => void;
+    onChoosePhoto: () => void | Promise<void>;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ onTakePhoto, onChoosePhoto }) => {

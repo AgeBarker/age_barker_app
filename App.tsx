@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   Button,
   Dimensions,
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -15,10 +16,30 @@ import Header from './components/Header';
 import ControlPanel from './components/ControlPanel';
 import PrimaryButton from './components/PrimaryButton';
 
+import  useImagePicker  from './hooks/ImagePickerHook';
+import SecondaryButton from './components/SecondaryButton';
+
 
 function App(): React.JSX.Element {
 
   const [photoSelected, setPhotoSelected] = React.useState<boolean | null>(false);
+  const {
+    imageInfo, 
+    image, 
+    pickImage, 
+    convertBase64ToImage, 
+    reset
+  } = useImagePicker();
+
+  useEffect(() => {
+    if (imageInfo) {
+      setPhotoSelected(true)
+      console.log('Image selected', imageInfo.uri);
+    }
+    else {
+      setPhotoSelected(false)
+    }
+  });
 
   return (
     <SafeAreaView>
@@ -33,9 +54,12 @@ function App(): React.JSX.Element {
               console.log('Take photo')
               setPhotoSelected(true)
             }}
-            onChoosePhoto={() => console.log('Choose photo')}/>
+            onChoosePhoto={pickImage}/>
           }
+          {(photoSelected && image) && <Image style={{width: 200, height: 200}} source={{uri: image}}/>}
           {photoSelected && <PrimaryButton title='Analyze' onPress={() => console.log("Analyzing...")}/>}
+          {photoSelected && <SecondaryButton title='Reset' onPress={reset}/>}
+
         </View>
       </ScrollView>
     </SafeAreaView>
