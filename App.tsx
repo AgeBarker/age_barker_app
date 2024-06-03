@@ -22,12 +22,16 @@ import SecondaryButton from './components/SecondaryButton';
 
 function App(): React.JSX.Element {
 
+  const [result, setResult] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [done, setDone] = React.useState<boolean>(false);
+
   const [photoSelected, setPhotoSelected] = React.useState<boolean | null>(false);
   const {
     imageInfo, 
     image, 
     pickImage, 
-    convertBase64ToImage, 
     reset,
     takePhoto
   } = useImagePicker();
@@ -39,8 +43,20 @@ function App(): React.JSX.Element {
     }
     else {
       setPhotoSelected(false)
+      setResult(null);
+      setError(null);
+      setLoading(false);
+      setDone(false);
     }
   });
+
+  const analyze = () => {
+    console.log('Analyzing...');
+    setLoading(true);
+    setResult('Analysis complete');
+    setLoading(false);
+    setDone(true);
+  }
 
   return (
     <SafeAreaView>
@@ -55,7 +71,10 @@ function App(): React.JSX.Element {
             onChoosePhoto={pickImage}/>
           }
           {(photoSelected && image) && <Image style={{width: 200, height: 200}} source={{uri: image}}/>}
-          {photoSelected && <PrimaryButton title='Analyze' onPress={() => console.log("Analyzing...")}/>}
+          {(result && done) && <Text>{result}</Text>}
+          {loading && <Text>Loading...</Text>}
+          {error && <Text>{error}</Text>}
+          {photoSelected && <PrimaryButton title='Analyze' onPress={analyze}/>}
           {photoSelected && <SecondaryButton title='Reset' onPress={reset}/>}
 
         </View>

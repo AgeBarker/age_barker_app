@@ -50,7 +50,7 @@ const useImagePicker = () => {
     }
 
 
-    return { imageInfo, image, pickImage, convertBase64ToImage, reset, takePhoto};
+    return { imageInfo, image, pickImage, reset, takePhoto};
 }
 
 export default useImagePicker;
