@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import type { PropsWithChildren } from 'react';
+import axios from 'axios';
 import {
   Button,
   Dimensions,
@@ -46,6 +47,21 @@ function App(): React.JSX.Element {
     }
   }, [imageInfo]);
 
+  const test = async () => {
+    console.log('Testing');
+    try {
+      const response = await axios.get('http://192.168.205.232:5000/');
+
+      const json = await response.data;
+      setLoading(false);
+      setResult(json);
+      setDone(true);
+      console.log('Response:', json);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   const analyze = async () => {
     if (!imageInfo) {
       setError('Please select an image');
@@ -60,7 +76,7 @@ function App(): React.JSX.Element {
     });
 
     try {
-      const response = await fetch('http://localhost:5000/predict', {
+      const response = await fetch('http://192.168.205.232:5000/predict', {
         method: 'POST',
         body: data,
         headers: {
