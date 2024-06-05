@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import type {PropsWithChildren} from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   Button,
   Dimensions,
@@ -15,19 +15,16 @@ import colors from './assets/colors';
 import Header from './components/Header';
 import ControlPanel from './components/ControlPanel';
 import PrimaryButton from './components/PrimaryButton';
-
-import  useImagePicker  from './hooks/ImagePickerHook';
+import useImagePicker from './hooks/ImagePickerHook';
 import SecondaryButton from './components/SecondaryButton';
 
-
 function App(): React.JSX.Element {
-
   const [result, setResult] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   const [done, setDone] = React.useState<boolean>(false);
 
-  const [photoSelected, setPhotoSelected] = React.useState<boolean | null>(false);
+  const [photoSelected, setPhotoSelected] = React.useState<boolean>(false);
   const {
     imageInfo, 
     image, 
@@ -38,25 +35,49 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     if (imageInfo) {
-      setPhotoSelected(true)
+      setPhotoSelected(true);
       console.log('Image selected', imageInfo.uri);
-    }
-    else {
-      setPhotoSelected(false)
+    } else {
+      setPhotoSelected(false);
       setResult(null);
       setError(null);
       setLoading(false);
       setDone(false);
     }
-  });
+  }, [imageInfo]);
 
-  const analyze = () => {
-    console.log('Analyzing...');
+  const analyze = async () => {
+    if (!imageInfo) {
+      setError('Please select an image');
+      return;
+    }
     setLoading(true);
-    setResult('Analysis complete');
-    setLoading(false);
-    setDone(true);
-  }
+    const data = new FormData();
+    data.append('image', {
+      name: imageInfo.fileName,
+      type: imageInfo.type,
+      uri: imageInfo.uri,
+    });
+
+    try {
+      const response = await fetch('http://localhost:5000/predict', {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const json = await response.json();
+      console.log('Response:', json);
+      setResult(json.result);
+      setLoading(false);
+      setDone(true);
+    } catch (error) {
+      console.error('Error:', error);
+      setError('An error occurred');
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView>
@@ -66,17 +87,18 @@ function App(): React.JSX.Element {
         <View 
           style={styles.mainContainer}>
           <Header />
-          {!photoSelected && <ControlPanel 
-            onTakePhoto={takePhoto}
-            onChoosePhoto={pickImage}/>
+          {!photoSelected && 
+            <ControlPanel 
+              onTakePhoto={takePhoto}
+              onChoosePhoto={pickImage}
+            />
           }
-          {(photoSelected && image) && <Image style={{width: 200, height: 200}} source={{uri: image}}/>}
-          {(result && done) && <Text>{result}</Text>}
+          {photoSelected && image && <Image style={{width: 200, height: 200}} source={{uri: image}} />}
+          {result && done && <Text>{result}</Text>}
           {loading && <Text>Loading...</Text>}
           {error && <Text>{error}</Text>}
-          {photoSelected && <PrimaryButton title='Analyze' onPress={analyze}/>}
-          {photoSelected && <SecondaryButton title='Reset' onPress={reset}/>}
-
+          {photoSelected && <PrimaryButton title='Analyze' onPress={analyze} />}
+          {photoSelected && <SecondaryButton title='Reset' onPress={reset} />}
         </View>
       </ScrollView>
     </SafeAreaView>
