@@ -86,7 +86,7 @@ function App(): React.JSX.Element {
       setDone(true);
     } catch (error) {
       console.error('Error:', error);
-      setError('An error occurred');
+      setError('An error occurred - choose another image');
       setLoading(false);
     }
   };
