@@ -8,7 +8,7 @@ export default function Header() {
   return (
     <View style={styles.header}>
         <Image source={require('../assets/logo.png')} style={styles.logo} />
-        <Text style={styles.headerText}>Take image of your dog and find out his age!</Text>
+        <Text style={styles.headerText}>Take image of your dog and find out his age and breed!</Text>
     </View>
   );
 }
@@ -22,12 +22,12 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: colors.light,
-    fontSize: 20,
+    fontSize: 18,
     textAlign: "center",
   },
   logo: {
-    width: Dimensions.get('window').width * 0.7,
-    height: Dimensions.get('window').width * 0.7,
+    width: Dimensions.get('window').width * 0.6,
+    height: Dimensions.get('window').width * 0.6,
     borderRadius: 100 / 2,
   },
 });

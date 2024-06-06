@@ -18,9 +18,14 @@ import ControlPanel from './components/ControlPanel';
 import PrimaryButton from './components/PrimaryButton';
 import useImagePicker from './hooks/ImagePickerHook';
 import SecondaryButton from './components/SecondaryButton';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 function App(): React.JSX.Element {
   const [result, setResult] = React.useState<string | null>(null);
+
+  const [age, setAge] = React.useState<number | null>(null);
+  const [breed, setBreed] = React.useState<string | null>(null);
+
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   const [done, setDone] = React.useState<boolean>(false);
@@ -47,20 +52,6 @@ function App(): React.JSX.Element {
     }
   }, [imageInfo]);
 
-  const test = async () => {
-    console.log('Testing');
-    try {
-      const response = await axios.get('http://192.168.205.232:5000/');
-
-      const json = await response.data;
-      setLoading(false);
-      setResult(json);
-      setDone(true);
-      console.log('Response:', json);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
 
   const analyze = async () => {
     if (!imageInfo) {
@@ -85,7 +76,12 @@ function App(): React.JSX.Element {
       });
       const json = await response.json();
       console.log('Response:', json);
-      setResult(json.result);
+      console.log(json)
+
+      setResult(json);
+      setAge(json.age);
+      setBreed(json.breed);
+
       setLoading(false);
       setDone(true);
     } catch (error) {
@@ -109,8 +105,13 @@ function App(): React.JSX.Element {
               onChoosePhoto={pickImage}
             />
           }
-          {photoSelected && image && <Image style={{width: 200, height: 200}} source={{uri: image}} />}
-          {result && done && <Text>{result}</Text>}
+          {photoSelected && image && <Image style={{width: 200, height: 200, borderRadius: 20, marginBottom: 10}} source={{uri: image}} />}
+          {result && done && 
+            <View>
+              <Text style={styles.text}>{`Age: ${age}`}</Text>
+              <Text style={styles.text}>{`Breed: ${breed?.replace('_', ' ')}`}</Text>
+            </View>
+          }
           {loading && <Text>Loading...</Text>}
           {error && <Text>{error}</Text>}
           {photoSelected && <PrimaryButton title='Analyze' onPress={analyze} />}
@@ -131,6 +132,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  text: {
+    color: colors.light,
+    fontSize: 18,
+    textAlign: 'center',
+  }
 });
 
 export default App;
